@@ -23,17 +23,9 @@ wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(data) {
     const info = JSON.parse(data);
     console.log(info);
-    info.map(msg => {
-      const content = msg.content;
-      const user = msg.username;
-      const id = msg.id;
-      console.log(`User ${user} with ID ${id} said ${content}`);
-    })
 
-    // A client WebSocket broadcasting to all connected WebSocket clients
     wss.clients.forEach(function each(client) {
-      // console.log(SocketServer.OPEN)
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(info));
       }
     });
