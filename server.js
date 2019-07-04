@@ -1,5 +1,6 @@
 const express = require('express');
 const WebSocket = require('ws');
+const uuid = require('uuid/v4');
 
 // Set the port to 3001
 const PORT = 3001;
@@ -20,13 +21,38 @@ const wss = new WebSocket.Server({ server });
 wss.on('connection', function connection(ws) {
   console.log('Client connected');
 
+  // Broadcast messages to all clients
   ws.on('message', function incoming(data) {
-    const info = JSON.parse(data);
-    console.log(info);
+    // const msg = JSON.parse(data);
+    // console.log(msg);
+
+    let receivedMsg = JSON.parse(data);
+    const newMessageObject = {};
+
+    switch(receivedMsg.type) {
+      case "postMessage":
+      // handle post message
+        newMessageObject.type = "incomingMessage";
+        newMessageObject.id = uuid();
+        newMessageObject.username = receivedMsg.username;
+        newMessageObject.content = receivedMsg.content;
+        break;
+      case "postNotification":
+      // handle post notification
+        newMessageObject.type = "incomingNotification";
+        newMessageObject.id = uuid();
+        newMessageObject.username = receivedMsg.username;
+        newMessageObject.content = receivedMsg.content;
+        break;
+      default:
+      // show an error in the console if the message type is unknown
+      throw new Error("Unknown event type " + receivedMsg.type);
+    };
 
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(info));
+        // client.send(JSON.stringify(msg));
+        client.send(JSON.stringify(newMessageObject));
       }
     });
 
