@@ -1,7 +1,5 @@
 # Chatty App Project
 
-Tweeter is a simple single-page application, a clone of Twitter.
-
 Chatty App is a simple, single-page REACT based communication app which allows users to communicate with each other without haveing to register. Following are the details of the WebSocket server which is used in the Chatty-App to broadcast messages to all users.
 
 ## Dependencies
