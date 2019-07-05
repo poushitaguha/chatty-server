@@ -47,17 +47,21 @@ wss.on('connection', function connection(ws) {
     switch(receivedMsg.type) {
       case "postMessage":
       // handle post message
-        newMessageObject.type = "incomingMessage";
-        newMessageObject.id = uuid();
-        newMessageObject.username = receivedMsg.username;
-        newMessageObject.content = receivedMsg.content;
+        newMessageObject = {
+          type : "incomingMessage",
+          id : uuid(),
+          username : receivedMsg.username,
+          content : receivedMsg.content
+        };
         break;
       case "postNotification":
       // handle post notification
-        newMessageObject.type = "incomingNotification";
-        newMessageObject.id = uuid();
-        newMessageObject.username = receivedMsg.username;
-        newMessageObject.content = receivedMsg.content;
+        newMessageObject = {
+          type : "incomingNotification",
+          id : uuid(),
+          username : receivedMsg.username,
+          content : receivedMsg.content
+        };
         break;
       default:
       // show an error in the console if the message type is unknown
