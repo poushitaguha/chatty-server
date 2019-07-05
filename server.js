@@ -14,12 +14,25 @@ const server = express()
 // Create the WebSockets server
 const wss = new WebSocket.Server({ server });
 
+  // Function to generate a random color for each client, used in state.
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+  return color;
+  }
+
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', function connection(ws) {
   console.log('Client connected');
   
+  ws.color = getRandomColor();
+  ws.username = "Anonymous";
+
 // Create notification for user that has joined the chat
   const newClientNotification = {
     id: uuid(),
@@ -47,21 +60,19 @@ wss.on('connection', function connection(ws) {
     switch(receivedMsg.type) {
       case "postMessage":
       // handle post message
-        newMessageObject = {
-          type : "incomingMessage",
-          id : uuid(),
-          username : receivedMsg.username,
-          content : receivedMsg.content
-        };
+        newMessageObject.type = "incomingMessage";
+        newMessageObject.id = uuid();
+        newMessageObject.username = receivedMsg.username;
+        newMessageObject.content = receivedMsg.content;
+        newMessageObject.color = ws.color;
         break;
       case "postNotification":
       // handle post notification
-        newMessageObject = {
-          type : "incomingNotification",
-          id : uuid(),
-          username : receivedMsg.username,
-          content : receivedMsg.content
-        };
+        newMessageObject.type = "incomingNotification";
+        newMessageObject.id = uuid();
+        newMessageObject.username = receivedMsg.username;
+        newMessageObject.content = receivedMsg.content;
+        ws.username = receivedMsg.username;
         break;
       default:
       // show an error in the console if the message type is unknown
@@ -84,7 +95,7 @@ wss.on('connection', function connection(ws) {
     const clientLeftNotification = {
       id: uuid(),
       type: "incomingNotification",
-      content: "User has left the chat"
+      content: `${ws.username} has left the chat`
     };
 
     // Sends a notification for client who has left chat 
