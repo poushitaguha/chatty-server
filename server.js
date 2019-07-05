@@ -19,13 +19,12 @@ const wss = new WebSocket.Server({ server });
 // the ws parameter in the callback.
 wss.on('connection', function connection(ws) {
   console.log('Client connected');
-  const username = 'Anonymous';
   
 // Create notification for user that has joined the chat
   const newClientNotification = {
     id: uuid(),
     type: "incomingNotification",
-    content: "New user has joined the chat"
+    content: "Anonymous user has joined the chat"
   };
 
   // Sends a notification for new client 
@@ -74,7 +73,6 @@ wss.on('connection', function connection(ws) {
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  // ws.on('close', () => console.log('Client disconnected'));
   ws.on('close', () => {
     console.log('Client disconnected')
 
